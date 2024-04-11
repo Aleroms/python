@@ -1,0 +1,2 @@
+,example@gmail.com,
+amazon,example@gmail.com,git
