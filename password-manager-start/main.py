@@ -1,13 +1,15 @@
 from tkinter import *
 from tkinter import messagebox
 import PasswordGen
-import pyperclip
+import json
 
 
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 def generate_password():
     password = PasswordGen.generate()
     password_input.insert(0, password)
+
+
 # ---------------------------- SAVE PASSWORD ------------------------------- #
 def save_password():
     is_ok = validate()
@@ -15,11 +17,26 @@ def save_password():
         return
 
     is_ok = confirm_inputs()
+    new_data = {
+        website_input.get(): {
+            "email": email_input.get(),
+            "password": password_input.get()
+        }
+    }
 
     if is_ok:
-        with open("test.txt", "a") as f:
-            text = f"{website_input.get()},{email_input.get()},{password_input.get()}\n"
-            f.write(text)
+        try:
+            with open("data.json", "r") as f:
+                data = json.load(f)
+                data.update(new_data)
+        except FileNotFoundError:
+            with open("data.json", "w") as f:
+                json.dump(new_data, f, indent=4)
+        else:
+            with open("data.json", "w") as f:
+                json.dump(data, f, indent=4)
+
+        finally:
             reset_fields()
 
 
@@ -44,6 +61,25 @@ def reset_fields():
     password_input.delete(0, END)
 
 
+def search():
+    # open data file
+    try:
+        with open("data.json", "r") as f:
+            data = json.load(f)
+            print(data[website_input.get()])
+    except FileNotFoundError:
+        messagebox.showerror(title="File Not Found", message="The file you requested does not exist")
+    except KeyError:
+        messagebox.showerror(title="No Match Found", message="No match found for provided input")
+    else:
+        current = data[website_input.get()]
+        messagebox.showinfo(title=website_input.get(), message=f"Email:{current["email"]}\n" \
+                                                               f"Password: {current["password"]}")
+    # check to see if key exists
+    # throw popup error if not found
+    # else return email and password as popup
+
+
 # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
 window.title("Password Generator")
@@ -65,19 +101,21 @@ password_label.grid(column=0, row=3)
 
 # creating inputs
 website_input = Entry(width=35)
-website_input.grid(column=1, row=1, columnspan=2, sticky="EW")
+website_input.grid(column=1, row=1, sticky="EW")
 website_input.focus()
 email_input = Entry(width=35)
 email_input.grid(column=1, row=2, columnspan=2, sticky="EW")
 email_input.insert(0, "example@gmail.com")
 password_input = Entry(width=21)
-password_input.grid(column=1, row=3, sticky="W")
+password_input.grid(column=1, row=3, sticky="EW")
 
 # creating buttons
 password_button = Button(text="Generate Password", command=generate_password)
 password_button.grid(column=2, row=3, sticky="EW")
 add_button = Button(text="Add", width=36, command=save_password)
 add_button.grid(column=1, row=4, columnspan=2, sticky="EW")
+search_button = Button(text="Search", command=search)
+search_button.grid(column=2, row=1, sticky="EW")
 # 2 buttons: generate password, add
 
 window.mainloop()
