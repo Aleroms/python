@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Blog Posts</title>
+</head>
+<body>
+    {% for blog_post in posts: %}
+        {% if blog_post["title"] == "Top 15 Things to do When You are Bored": %}
+            <h2>{{blog_post["title"] }}</h2>
+            <h3>{{ blog_post["subtitle"] }}</h3>
+        {% endif %}
+    {% endfor %}
+</body>
+</html>
