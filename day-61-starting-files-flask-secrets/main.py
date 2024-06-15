@@ -1,4 +1,5 @@
 from flask import Flask, render_template
+from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, Length
@@ -12,7 +13,7 @@ class MyForm(FlaskForm):
 
 app = Flask(__name__)
 app.secret_key = 'test'
-
+bootstrap = Bootstrap5(app)
 
 @app.route("/")
 def home():
@@ -24,6 +25,9 @@ def login():
     form = MyForm()
     if form.validate_on_submit():
         print(form.email.data)
+        print(form.password.data)
+        page_navigation = validAuth(form.email.data, form.password.data)
+        return render_template(page_navigation)
     return render_template('login.html', form=form)
 
 
