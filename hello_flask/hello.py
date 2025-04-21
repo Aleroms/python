@@ -1,12 +1,4 @@
 from flask import Flask
-<<<<<<< HEAD
-
-app = Flask(__name__)
-
-@app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
-=======
 from random import randint
 
 app = Flask(__name__)
